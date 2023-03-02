@@ -74,6 +74,18 @@ const Button = ({ handleClick, text }) => {
 
 // ########### END COUNTER ###########
 
+// ########### PART 1 EXERCISE 1.6 - 1.14 ###########
+const DisplayFeedback = ({feedback, feedbackName}) => {
+	return (
+		<>
+			<p>{feedbackName}: {feedback}</p>
+		</>
+	)
+}
+
+
+// ########### END PART 1 EXERCISE 1.6 - 1.14 ###########
+
 function App() {
   const course = {
     name: 'Half Stack application development',
@@ -96,6 +108,16 @@ function App() {
   // useState example
   const [counter, setCounter] = useState(0);
   console.log('rendering with counter value', counter);
+
+	// ########### PART 1 EXERCISE 1.6 - 1.14 ###########
+	const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+
+
+
+
+ // ########### END PART 1 EXERCISE 1.6 - 1.14 ###########
 
   // 2 args: function ref / code, delay
   //setTimeout (() => setCounter(counter + 1), 1000)
@@ -142,6 +164,22 @@ function App() {
       <br />
       <br />
       <Button text={'Reset'} handleClick={() => setToValue(0)}></Button>
+			<br />
+      <br />
+
+			{/* PART 1 Exercises 1.6 - 1.14 */}
+			<h1>Give Feedback</h1>
+			<Button text={'Good'} handleClick={() => setGood(good + 1)} />
+			<Button text={'Neutral'} handleClick={() => setNeutral(neutral + 1)} />
+			<Button text={'Bad'} handleClick={() => setBad(bad + 1)} />
+
+			<h1>Statistics</h1>
+			<DisplayFeedback feedbackName={'good'} feedback={good}  />
+			<DisplayFeedback feedbackName={'neutral'} feedback={neutral}  />
+			<DisplayFeedback feedbackName={'bad'} feedback={bad}  />
+
+
+
     </>
   );
 }
