@@ -2,8 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+/*
 const notes = [
   {
     content: 'HTML is easy',
@@ -21,9 +23,10 @@ const notes = [
     important: true,
   },
 ];
+*/
 
 root.render(
   <React.StrictMode>
-    <App notes={notes} />
+    <App />
   </React.StrictMode>
 );

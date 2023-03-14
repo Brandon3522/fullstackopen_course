@@ -1,28 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './index.css';
 import Course from './components/Course.js';
 import Note from './components/Note.js';
 import Filter from './components/Filter';
-import Person from './components/Person';
 import Persons from './components/Persons';
 import AddPerson from './components/AddPerson';
+import axios from 'axios';
+import noteService from './services/notes.js'
+import personService from './services/persons.js'
 
-const App = (props) => {
+const App = () => {
   // Notes state
-  const [notes, setNotes] = useState(props.notes);
+  const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
   const [showAll, setShowAll] = useState(true);
+	const [loading, setLoading] = useState(true);
 
   // Phonebook state
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [number, setNumber] = useState('');
   const [search, setSearch] = useState('');
+
+	// GET notes from local server
+	useEffect(() => {
+		console.log('effect');
+		noteService
+			.getAll()
+			.then((initialNotes) => {
+				console.log('Promise fulfilled');
+				setNotes(initialNotes)
+			})
+
+		setLoading(false)
+	}, [])
+
+	// GET persons from local server
+	useEffect(() => {
+		console.log('effect');
+		personService
+			.getAll()
+			.then((initialPeople) => {
+				console.log('Promise fulfilled');
+				setPersons(initialPeople)
+			})
+
+			setLoading(false)
+	}, [])
+	
 
   const filterPersons = persons.filter((person) => {
     return person.name.toLowerCase().includes(search.toLowerCase());
@@ -30,6 +55,22 @@ const App = (props) => {
 
   // True: notes, false: filter for important notes
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
+
+	// Toggle importance of note
+	const toggleImportanceOf = (id) => {
+		const note = notes.find(note => note.id === id)
+		const changedNote = { ...note, important: !note.important }
+
+		noteService
+			.update(id, changedNote)
+			.then(returnedNote => {
+				setNotes(notes.map(note => note.id !== id ? note : returnedNote))
+			})
+			.catch(error => {
+				alert(`The note '${note.content}' has already been deleted from the server.`)
+				setNotes(notes.filter(note => note.id !== id))
+			})
+	}
 
   const courses = [
     {
@@ -76,7 +117,8 @@ const App = (props) => {
     },
   ];
 
-  // Note
+  // Note: Local addition
+	/*
   const addNote = (event) => {
     event.preventDefault(); // Prevent page refresh
     const noteObject = {
@@ -88,6 +130,23 @@ const App = (props) => {
     setNotes(notes.concat(noteObject));
     setNewNote('');
   };
+	*/
+
+	// Note: Add with POST method
+	const addNote = (event) => {
+    event.preventDefault(); // Prevent page refresh
+    const noteObject = {
+      content: newNote,
+      important: Math.random() < 0.5,
+    };
+
+    noteService
+			.create(noteObject)
+			.then(returnedNote => {
+				setNotes(notes.concat(returnedNote))
+				setNewNote('')
+			})
+  }; 
 
   // Alternate method to save input
   /*
@@ -98,6 +157,7 @@ const App = (props) => {
 	*/
 
   // Phonebook
+	// Fix adding duplicate name to database
   const addPerson = (event) => {
     event.preventDefault();
     const isEqual = doesPersonExist(newName);
@@ -110,8 +170,17 @@ const App = (props) => {
       number: number,
     };
 
-    setPersons(persons.concat(personObject));
-    setNewName('');
+		personService
+			.create(personObject)
+			.then((returnedPerson) => {
+				setPersons(persons.concat(returnedPerson));
+    		setNewName('');
+			})
+			.catch((error) => {
+				alert(error)
+			})
+
+    
   };
 
   const doesPersonExist = (name) => {
@@ -130,6 +199,15 @@ const App = (props) => {
   const handleNumberChange = (event) => {
     setNumber(event.target.value);
   };
+
+	
+	if (loading) {
+		return(
+			<>
+				<h1>LOADING...</h1>
+			</>
+		)
+	}
 
   return (
     <>
@@ -153,7 +231,11 @@ const App = (props) => {
       </div>
       <ul>
         {notesToShow.map((note) => (
-          <Note key={note.id} note={note} />
+          <Note 
+						key={note.id} 
+						note={note}
+						toggleImportance={() => toggleImportanceOf(note.id)}
+					/>
         ))}
       </ul>
       <br />
