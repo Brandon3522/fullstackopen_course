@@ -1,10 +1,11 @@
 
 
 
-const Person = ({name, number}) => {
+const Person = ({name, id, number, deletePerson}) => {
 	return (
 		<>
 			{name} {number}
+			<button onClick={() => deletePerson(id)}>Delete</button>
 		</>
 	)
 }

@@ -21,19 +21,14 @@
       "id": 4
     },
     {
-      "name": "new person",
-      "number": "123456789",
-      "id": 5
+      "name": "bill",
+      "number": "412-526-5457",
+      "id": 7
     },
     {
       "name": "bob",
       "number": "12356789",
-      "id": 6
-    },
-    {
-      "name": "",
-      "number": "12356789",
-      "id": 7
+      "id": 8
     }
   ]
 }

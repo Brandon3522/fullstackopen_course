@@ -49,9 +49,9 @@ const App = () => {
 	}, [])
 	
 
-  const filterPersons = persons.filter((person) => {
-    return person.name.toLowerCase().includes(search.toLowerCase());
-  });
+  // const filterPersons = persons.filter((person) => {
+  //   return person.name.toLowerCase().includes(search.toLowerCase());
+  // });
 
   // True: notes, false: filter for important notes
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
@@ -60,6 +60,7 @@ const App = () => {
 	const toggleImportanceOf = (id) => {
 		const note = notes.find(note => note.id === id)
 		const changedNote = { ...note, important: !note.important }
+		console.log(`Change note: ${changedNote}`);
 
 		noteService
 			.update(id, changedNote)
@@ -162,9 +163,26 @@ const App = () => {
     event.preventDefault();
     const isEqual = doesPersonExist(newName);
     if (isEqual) {
-      alert(`${newName} is already in the phonebook`);
-      return;
+      if (window.confirm(`${newName} is already added to the phonebook, would you like to replace the old number with the new number?`)) {
+				// Replace old number with new number
+				const currentPerson = persons.find(person => person.name === newName)
+				const changedPerson = { ...currentPerson, number: number } // Change number
+
+				personService
+					.update(currentPerson.id, changedPerson)
+					.then(returnedPerson => {
+						// set new number
+						console.log('in persons add update');
+						setPersons(persons.map(person => person.id !== currentPerson.id ? person : returnedPerson))
+						setNewName('')
+						setNumber('')
+					}).catch(error => {
+						alert(error)
+					})
+				return
+			}
     }
+
     const personObject = {
       name: newName,
       number: number,
@@ -175,13 +193,34 @@ const App = () => {
 			.then((returnedPerson) => {
 				setPersons(persons.concat(returnedPerson));
     		setNewName('');
+				setNumber('')
 			})
 			.catch((error) => {
 				alert(error)
 			})
-
-    
   };
+
+	// Delete person from persons and JSON database
+	// id passed in from person component
+	const deletePerson = (id) => {
+		if (window.confirm(`Are you sure you want to delete this person?`)) {
+			console.log(`Delete person: ${id}`)
+			const personToDelete = persons.filter(person => person.id === id)
+
+			personService
+				.deletePerson(id)
+				.then(returnedPerson => {
+					setPersons(persons.filter(person => person.id !== id))
+					console.log(persons)
+				}).catch(error => {
+					alert(`The note '${personToDelete.name}' has already been deleted from the server.`)
+					setPersons(persons.filter(person => person.id !== id))
+				})
+		}
+		
+
+
+	}
 
   const doesPersonExist = (name) => {
     for (const person of persons) {
@@ -263,12 +302,14 @@ const App = () => {
 			{/* Add person form */}
       <AddPerson
         addPerson={addPerson}
+				name={newName}
+				number={number}
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
       />
 
       <h2>All Numbers</h2>
-      <Persons persons={persons} />
+      <Persons persons={persons} deletePerson={deletePerson}/>
 
       <Filter persons={persons} search={search} />
 
