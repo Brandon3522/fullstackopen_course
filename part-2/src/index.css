@@ -12,3 +12,29 @@ ul {
 button {
 	margin-left: 5px;
 }
+
+.note {
+	padding-top: 5px;
+	font-size: 15px;
+}
+
+.error {
+	color: red;
+	font-weight: bold;
+	background: lightgray;
+	font-size: 20px;
+	border-style: solid;
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+.success {
+	color: green;
+	font-weight: bold;
+	background: lightgray;
+	border-style: solid;
+	border-radius: 5px;
+	padding: 10px;
+	margin-bottom: 10px;
+}

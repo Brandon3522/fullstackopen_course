@@ -8,6 +8,10 @@ import AddPerson from './components/AddPerson';
 import axios from 'axios';
 import noteService from './services/notes.js'
 import personService from './services/persons.js'
+import Notification from './components/Notification';
+import Footer from './components/Footer';
+import Success from './components/Success';
+import Error from './components/Error';
 
 const App = () => {
   // Notes state
@@ -15,12 +19,15 @@ const App = () => {
   const [newNote, setNewNote] = useState('');
   const [showAll, setShowAll] = useState(true);
 	const [loading, setLoading] = useState(true);
+	const [errorMessage, setErrorMessage] = useState(null)
 
   // Phonebook state
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [number, setNumber] = useState('');
   const [search, setSearch] = useState('');
+	const [successMessage, setSuccessMessage] = useState(null)
+	const [deleteError, setDeleteError] = useState(null)
 
 	// GET notes from local server
 	useEffect(() => {
@@ -68,7 +75,10 @@ const App = () => {
 				setNotes(notes.map(note => note.id !== id ? note : returnedNote))
 			})
 			.catch(error => {
-				alert(`The note '${note.content}' has already been deleted from the server.`)
+				setErrorMessage(`The note '${note.content}' was already removed from the server.`)
+				setTimeout(() => {
+					setErrorMessage(null)
+				}, 5000);
 				setNotes(notes.filter(note => note.id !== id))
 			})
 	}
@@ -192,8 +202,12 @@ const App = () => {
 			.create(personObject)
 			.then((returnedPerson) => {
 				setPersons(persons.concat(returnedPerson));
-    		setNewName('');
+    		setNewName('')
 				setNumber('')
+				setSuccessMessage(`Added ${newName}`)
+				setTimeout(() => {
+					setSuccessMessage(null)
+				}, 5000)
 			})
 			.catch((error) => {
 				alert(error)
@@ -205,7 +219,9 @@ const App = () => {
 	const deletePerson = (id) => {
 		if (window.confirm(`Are you sure you want to delete this person?`)) {
 			console.log(`Delete person: ${id}`)
-			const personToDelete = persons.filter(person => person.id === id)
+			const personToDelete = persons.find(person => person.id === id)
+			//const selectedPersonName = 
+			console.log(personToDelete.name);
 
 			personService
 				.deletePerson(id)
@@ -213,13 +229,13 @@ const App = () => {
 					setPersons(persons.filter(person => person.id !== id))
 					console.log(persons)
 				}).catch(error => {
-					alert(`The note '${personToDelete.name}' has already been deleted from the server.`)
-					setPersons(persons.filter(person => person.id !== id))
+					setDeleteError(`Information of '${personToDelete.name}' has already been deleted from the server.`)
+					setTimeout(() => {
+						setDeleteError(null)
+					}, 5000);
+					// setPersons(persons.filter(person => person.id !== id))
 				})
 		}
-		
-
-
 	}
 
   const doesPersonExist = (name) => {
@@ -263,6 +279,7 @@ const App = () => {
 
       {/* Notes */}
       <h1>Notes</h1>
+			<Notification message={errorMessage} />
       <div>
         <button onClick={() => setShowAll(!showAll)}>
           Show {showAll ? 'Important' : 'All'}
@@ -289,7 +306,8 @@ const App = () => {
 
       {/* Phonebook */}
       <h1>Phonebook</h1>
-
+			<Success message={successMessage} />
+			<Error message={deleteError} />
       {/* Search */}
       <div>
         Filter Numbers:
@@ -314,6 +332,8 @@ const App = () => {
       <Filter persons={persons} search={search} />
 
       {/* Phonebook */}
+
+			<Footer />
     </>
   );
 };
