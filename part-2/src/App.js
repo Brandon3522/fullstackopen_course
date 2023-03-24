@@ -5,7 +5,6 @@ import Note from './components/Note.js';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
 import AddPerson from './components/AddPerson';
-import axios from 'axios';
 import noteService from './services/notes.js'
 import personService from './services/persons.js'
 import Notification from './components/Notification';
