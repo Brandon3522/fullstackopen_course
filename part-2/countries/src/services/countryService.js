@@ -14,7 +14,8 @@ const getAll = () => {
 // URL https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}
 const weatherBaseURL = `https://api.openweathermap.org/data/2.5/weather?q=`
 const getCityWeather = (cityName) => {
-	const request = axios.get(`${weatherBaseURL}${cityName}&appid=${API_KEY}`);
+	console.log(API_KEY)
+	const request = axios.get(`${weatherBaseURL}${cityName}&appid=${API_KEY}&units=imperial`);
 	return request.then((response) => response.data);
 }
 

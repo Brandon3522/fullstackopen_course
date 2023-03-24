@@ -20,7 +20,7 @@ function Country({name, capital, area, flag, languages}) {
 		return 'Error: Languages not found'
 	}
 
-	if (weather !== null) {
+	if (weather) {
 		return (
 			<div>
 				<h2>Country: {name}</h2>
@@ -39,8 +39,8 @@ function Country({name, capital, area, flag, languages}) {
 				</div>
 				<div>
 					<h2>Weather in {capital}</h2>
-					<p>Temperature: {weather.main.temp} Celsius</p>
-					
+					<p>Temperature: {weather.main.temp} Fahrenheit</p>
+					<img alt='Weather Icon' src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}></img>
 					<p>Wind: {weather.wind.speed} m/s</p>
 				</div>
 			</div>
