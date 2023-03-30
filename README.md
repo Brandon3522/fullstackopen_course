@@ -3,6 +3,8 @@ This course is an introduction to modern web development with JavaScript. The ma
 
 Other topics include debugging applications, container technology, configuration, managing runtime environments, and databases.
 
+This repository contains course content and solutions to the course's exercises.
+
 ### Part 1 - Introduction to React
 ### Part 2 - Communicating with server
 ### Part 3 - Programming a server with NodeJS and Express
