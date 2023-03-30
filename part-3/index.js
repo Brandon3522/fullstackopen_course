@@ -4,6 +4,9 @@
 const express = require('express');
 const app = express();
 
+// Express json parser
+app.use(express.json());
+
 let notes = [
   {
     id: 1,
@@ -36,6 +39,41 @@ app.get('/', (request, response) => {
 // Get notes
 app.get('/api/notes', (request, response) => {
 	response.json(notes);
+})
+
+// Get single note
+app.get('/api/notes/:id', (request, response) => {
+	const id = Number(request.params.id); // Convert to number
+	const note = notes.find(note => note.id === id);
+
+	if (note) {
+		response.json(note); // note found
+	} else {
+		response.status(404).end(); // Error, note not found
+	}
+})
+
+// Delete note
+app.delete('/api/notes/:id', (request, response) => {
+	const id = Number(request.params.id);
+	notes = notes.filter(note => note.id !== id);
+
+	response.status(204).end(); // No content, return no data
+})
+
+// Create new note
+app.post('/api/notes', (request, response) => {
+	// Find largest id
+	const maxId = notes.length > 0
+		? Math.max(...notes.map((n) => n.id))
+		: 0
+
+	const note = request.body;
+	note.id = maxId + 1;
+
+	notes = notes.concat(note);
+
+	response.json(note);
 })
 
 const PORT = 3001;
