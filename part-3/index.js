@@ -1,11 +1,16 @@
-
-
 //const http = require('http');
 const express = require('express');
 const app = express();
+const cors = require('cors')
 
 // Express json parser
 app.use(express.json());
+
+// Show static content from build directory
+app.use(express.static('build'))
+
+// Allow requests from all origins
+app.use(cors())
 
 let notes = [
   {
@@ -32,9 +37,9 @@ let notes = [
 // })
 
 // Root request
-app.get('/', (request, response) => {
-	response.send('<h1>Welcome!</h1>');
-})
+// app.get('/', (request, response) => {
+// 	response.send('<h1>Welcome!</h1>');
+// })
 
 // Get notes
 app.get('/api/notes', (request, response) => {
@@ -76,7 +81,7 @@ app.post('/api/notes', (request, response) => {
 	response.json(note);
 })
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);
 })

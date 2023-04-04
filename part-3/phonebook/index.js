@@ -1,9 +1,12 @@
 const express = require('express');
-var morgan = require('morgan')
+const morgan = require('morgan')
+const cors = require('cors');
 const app = express();
 
 // Express json parser
 app.use(express.json())
+
+app.use(cors())
 
 // Log request body to console
 morgan.token('body', (res, req) => {
