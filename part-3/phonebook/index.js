@@ -6,7 +6,11 @@ const app = express();
 // Express json parser
 app.use(express.json())
 
+// Allow requests from all origins
 app.use(cors())
+
+// Show static content from build directory
+app.use(express.static('build'))
 
 // Log request body to console
 morgan.token('body', (res, req) => {
@@ -32,8 +36,6 @@ app.use(requestLogger)
 const unknownEndpoint = (req, res) => {
 	res.status(404).send({error: 'Unknown endpoint'});
 }
-
-const PORT = 3002
 
 let persons = [
 	{ 
@@ -108,8 +110,8 @@ app.post('/api/persons', (req, res) => {
 
 	// Name or number missing
 	let name = persons.find(person => person.name === new_person.name)
-	console.log(new_person.name)
-	console.log(name)
+	// console.log(new_person.name)
+	// console.log(name)
 	if (new_person.name === '') {
 		res.status(400).send({
 			error: 'Name is missing'
@@ -132,6 +134,8 @@ app.post('/api/persons', (req, res) => {
 })
 
 app.use(unknownEndpoint)
+
+const PORT = process.env.PORT || 3002;
 
 app.listen(PORT, () => {
 	console.log(`Starting port ${PORT}`)
