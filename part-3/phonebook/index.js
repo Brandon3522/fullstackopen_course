@@ -3,6 +3,12 @@ const morgan = require('morgan')
 const cors = require('cors');
 const app = express();
 
+// Multiple .env variables
+require('dotenv').config();
+
+// Import database person model
+const Person = require('./models/person')
+
 // Express json parser
 app.use(express.json())
 
@@ -37,7 +43,7 @@ const unknownEndpoint = (req, res) => {
 	res.status(404).send({error: 'Unknown endpoint'});
 }
 
-let persons = [
+/* let persons = [
 	{ 
 		"id": 1,
 		"name": "Arto Hellas", 
@@ -58,7 +64,13 @@ let persons = [
 		"name": "Mary Poppendieck", 
 		"number": "39-23-6423122"
 	}
-]
+] */
+
+// Create person in database
+/* const person = new Person({
+	name: phonename,
+	number: phonenumber,
+}); */
 
 // HTTP methods
 app.get('/', (req, res) => {
@@ -67,7 +79,16 @@ app.get('/', (req, res) => {
 
 // Get all persons
 app.get('/api/persons', (req, res) => {
-	res.json(persons)
+	//res.json(persons)
+
+	// MongoDB database 
+	Person.find({})
+		.then((persons) => {
+			res.json(persons);
+		})
+		.catch((err) => {
+			console.log(`Error retrieving people: ${err.message}`)
+		})
 })
 
 // Get phonebook info
@@ -101,7 +122,7 @@ app.delete('/api/persons/:id', (req, res) => {
 
 // Create new person
 app.post('/api/persons', (req, res) => {
-	let max = Number(1000)
+	/* let max = Number(1000)
 	let min = Number(0)
 	let id = (Math.random() * (max - min) + min).toFixed(0)
 
@@ -130,7 +151,31 @@ app.post('/api/persons', (req, res) => {
 		persons = persons.concat(new_person)
 
 		res.json(new_person)
+	} */
+
+	// Database
+	const body = req.body;
+
+	// Create person
+	const person = new Person({
+		name: body.name,
+		number: body.number
+	})
+
+	// Error
+	if (body.name.trim() === '' || body.number.trim() === '') {
+		return res.status(404).json({error: 'Name or number is missing'});
 	}
+
+	// Save to database
+	person.save()
+		.then((newPerson) => {
+			console.log(`Person created: ${newPerson.name}`)
+			res.json(newPerson)
+		})
+		.catch((err) => {
+			console.log(`Error creating person: ${err.message}`)
+		})
 })
 
 app.use(unknownEndpoint)

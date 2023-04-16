@@ -56,35 +56,57 @@ let notes = [
 // Get notes
 app.get('/api/notes', (request, response) => {
 	// MongoDB
-	Note.find({}).then((notes) => {
-		response.json(notes)
-	})
+	Note.find({})
+		.then((notes) => {
+			console.log(notes);
+			response.json(notes)
+		})
 })
 
 // Get single note
 app.get('/api/notes/:id', (request, response) => {
-	const id = Number(request.params.id); // Convert to number
+	/* const id = Number(request.params.id); // Convert to number
 	const note = notes.find(note => note.id === id);
 
 	if (note) {
 		response.json(note); // note found
 	} else {
 		response.status(404).end(); // Error, note not found
-	}
+	} */
+
+	// Database request
+	Note.findById(request.params.id)
+		.then((note) => {
+			console.log(note);
+			response.json(note);
+		})
+		.catch((error) => {
+			console.log(`Error: ${error.message}`);
+			response.status(404).end();
+		})
 })
 
 // Delete note
 app.delete('/api/notes/:id', (request, response) => {
-	const id = Number(request.params.id);
+	/* const id = Number(request.params.id);
 	notes = notes.filter(note => note.id !== id);
 
-	response.status(204).end(); // No content, return no data
+	response.status(204).end(); // No content, return no data  */
+
+	Note.findByIdAndDelete(request.params.id)
+		.then((note) => {
+			console.log(`Note Deleted`);
+			response.json(note);
+		})
+		.catch((error) => {
+			console.log(`Error: ${error.message}`);
+			response.status(204).end(); // No content, return no data 
+		})
 })
 
 // Create new note
 app.post('/api/notes', (request, response) => {
-	// Find largest id
-	const maxId = notes.length > 0
+	/* const maxId = notes.length > 0
 		? Math.max(...notes.map((n) => n.id))
 		: 0
 
@@ -93,7 +115,29 @@ app.post('/api/notes', (request, response) => {
 
 	notes = notes.concat(note);
 
-	response.json(note);
+	response.json(note); */
+
+	// Database request
+	const body = request.body;
+
+	if (body.content === undefined) {
+		return response.status(404).json({error: 'Content missing'});
+	}
+
+	const note = new Note({
+		content: body.content,
+		important: body.important || false,
+	})
+
+	note.save()
+		.then((savedNote) => {
+			console.log(`Note Created: ${savedNote}`);
+			response.json(savedNote);
+		})
+		.catch((error) => {
+			console.log(`Error: ${error.message}`)
+		})
+
 })
 
 const PORT = process.env.PORT || 3001;
