@@ -1,7 +1,15 @@
 //const http = require('http');
-const express = require('express');
-const app = express();
+const express = require('express')
 const cors = require('cors')
+
+// Multiple .env variables
+require('dotenv').config();
+
+// Import Note model 
+const Note = require('./models/note')
+
+// Create express app
+const app = express();
 
 // Express json parser
 app.use(express.json());
@@ -12,6 +20,7 @@ app.use(express.static('build'))
 // Allow requests from all origins
 app.use(cors())
 
+/*
 let notes = [
   {
     id: 1,
@@ -29,6 +38,9 @@ let notes = [
     important: true
   }
 ]
+*/
+
+//const Note = mongoose.model('Note', noteSchema)
 
 // HTTP method
 // const app = http.createServer((request, response) => {
@@ -43,7 +55,10 @@ let notes = [
 
 // Get notes
 app.get('/api/notes', (request, response) => {
-	response.json(notes);
+	// MongoDB
+	Note.find({}).then((notes) => {
+		response.json(notes)
+	})
 })
 
 // Get single note
