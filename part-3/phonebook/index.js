@@ -7,7 +7,7 @@ const app = express();
 require('dotenv').config();
 
 // Import database person model
-const Person = require('./models/person')
+const Person = require('./models/person');
 
 // Express json parser
 app.use(express.json())
@@ -41,6 +41,17 @@ app.use(requestLogger)
 // Catch unknown endpoints in API
 const unknownEndpoint = (req, res) => {
 	res.status(404).send({error: 'Unknown endpoint'});
+}
+
+// Middleware error handler
+const errorHandler = (request, response, error, next) => {
+	console.log(`Error: ${error.message}`);
+
+	if (error.name === 'CastError' ) {
+		return response.status(400).send({ error: 'Malformatted id' });
+	};
+
+	next(error);
 }
 
 /* let persons = [
@@ -78,7 +89,7 @@ app.get('/', (req, res) => {
 })
 
 // Get all persons
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
 	//res.json(persons)
 
 	// MongoDB database 
@@ -87,41 +98,97 @@ app.get('/api/persons', (req, res) => {
 			res.json(persons);
 		})
 		.catch((err) => {
-			console.log(`Error retrieving people: ${err.message}`)
+			next(err);
 		})
 })
 
 // Get phonebook info
-app.get('/api/info', (req, res) => {
-	let persons_length  = persons.length
+app.get('/api/info', (req, res, next) => {
+	/* let persons_length = persons.length
 
 	let time = new Date()
 
-	res.send(`<p>Phonebook has info for ${persons_length} people.</p> <br/> <p>${time}</p>`)
+	res.send(`<p>Phonebook has info for ${persons_length} people.</p> <br/> <p>${time}</p>`) */
+
+	// Database
+	let time = new Date();
+
+	// Get estimated count of documents
+	Person.estimatedDocumentCount()
+		.then(numDocuments => {
+			res.send(`<p>Phonebook has info for ${numDocuments} people.</p> <br/> <p>${time}</p>`)
+		})
+		.catch(error => {
+			next(error);
+		})
 })
 
 // Get person by id
-app.get('/api/persons/:id', function (req, res) {
-	let id = Number(req.params.id)
+app.get('/api/persons/:id', function (req, res, next) {
+	/* let id = Number(req.params.id)
 	let person = persons.find(person => person.id === id)
 
 	if (person) {
 		res.json(person)
 	} else {
 		res.status(404).end()
-	}
+	} */
+
+	// Database
+	Person.findById(req.params.id)
+		.then(person => {
+			if (person) {
+				res.json(person);
+			} else {
+				res.status(404).end();
+			}
+		})
+		.catch(error => {
+			next(error);
+		})
 })
 
 // Delete person by id
-app.delete('/api/persons/:id', (req, res) => {
-	let id = Number(req.params.id)
+app.delete('/api/persons/:id', (req, res, next) => {
+	/* let id = Number(req.params.id)
 	persons = persons.filter(person => person.id !== id)
 
-	res.status(204).end()
+	res.status(204).end() */
+
+	// Database
+	Person.findByIdAndDelete(req.params.id)
+		.then(person => {
+			console.log(`Person deleted successfully.`)
+			response.status(204).end();
+		})
+		.catch(error => {
+			next(error);
+		})
+})
+
+// Update person
+app.put('/api/persons/:id', (request, response, next) => {
+	const body = request.body;
+	console.log('Updating person');
+
+	const person = {
+		name: body.name,
+		number: body.number
+	}
+
+	Person.findByIdAndUpdate(request.params.id, person, {new: true})
+		.then(updatedPerson => {
+			response.json(updatedPerson);
+		})
+		.catch(error => {
+			next(error);
+		})
+
+
 })
 
 // Create new person
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
 	/* let max = Number(1000)
 	let min = Number(0)
 	let id = (Math.random() * (max - min) + min).toFixed(0)
@@ -174,11 +241,14 @@ app.post('/api/persons', (req, res) => {
 			res.json(newPerson)
 		})
 		.catch((err) => {
-			console.log(`Error creating person: ${err.message}`)
+			next(err);
 		})
 })
 
-app.use(unknownEndpoint)
+app.use(unknownEndpoint);
+
+// Middleware error handler
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3002;
 

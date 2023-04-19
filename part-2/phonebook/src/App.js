@@ -41,6 +41,7 @@ function App() {
 				// Replace old number with new number
 				const currentPerson = persons.find(person => person.name === newName)
 				const changedPerson = { ...currentPerson, number: number } // Change number
+				console.log('Updating person frontend')
 
 				personService
 					.update(currentPerson.id, changedPerson)

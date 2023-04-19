@@ -11,14 +11,30 @@ const Note = require('./models/note')
 // Create express app
 const app = express();
 
-// Express json parser
-app.use(express.json());
-
 // Show static content from build directory
 app.use(express.static('build'))
 
+// Express json parser
+app.use(express.json());
+
 // Allow requests from all origins
 app.use(cors())
+
+// Catch unknown endpoints in API
+const unknownEndpoint = (req, res) => {
+	res.status(404).send({error: 'Unknown endpoint'});
+}
+
+// Middleware error handler
+const errorHandler = (error, request, response, next) => {
+	console.log(error.message);
+
+	if (error.name === 'CastError') {
+		return response.status(400).send({error: 'Malformattd id'});
+	}
+
+	next(error);
+}
 
 /*
 let notes = [
@@ -64,7 +80,7 @@ app.get('/api/notes', (request, response) => {
 })
 
 // Get single note
-app.get('/api/notes/:id', (request, response) => {
+app.get('/api/notes/:id', (request, response, next) => {
 	/* const id = Number(request.params.id); // Convert to number
 	const note = notes.find(note => note.id === id);
 
@@ -77,30 +93,50 @@ app.get('/api/notes/:id', (request, response) => {
 	// Database request
 	Note.findById(request.params.id)
 		.then((note) => {
-			console.log(note);
-			response.json(note);
+			if (note) {
+				response.json(note);
+			} else {
+				response.status(404).end();
+			}
 		})
 		.catch((error) => {
-			console.log(`Error: ${error.message}`);
-			response.status(404).end();
+			next(error); // Pass error to next function for middleware
 		})
 })
 
 // Delete note
-app.delete('/api/notes/:id', (request, response) => {
+app.delete('/api/notes/:id', (request, response, next) => {
 	/* const id = Number(request.params.id);
 	notes = notes.filter(note => note.id !== id);
 
 	response.status(204).end(); // No content, return no data  */
 
-	Note.findByIdAndDelete(request.params.id)
+	Note.findByIdAndRemove(request.params.id)
 		.then((note) => {
 			console.log(`Note Deleted`);
-			response.json(note);
+			response.status(204).end(); // No content, return no data 
 		})
 		.catch((error) => {
-			console.log(`Error: ${error.message}`);
-			response.status(204).end(); // No content, return no data 
+			next(error);
+		})
+})
+
+// Update note
+app.put('/api/notes/:id', (request, response, next) => {
+	const body = request.body;
+	console.log('Updating note')
+
+	const note = {
+		content: body.content,
+		important: body.important
+	}
+
+	Note.findByIdAndUpdate(request.params.id, note, { new: true })
+		.then((updatedNote) => {
+			response.json(updatedNote);
+		})
+		.catch((error) => {
+			next(error);
 		})
 })
 
@@ -139,6 +175,12 @@ app.post('/api/notes', (request, response) => {
 		})
 
 })
+
+app.use(unknownEndpoint);
+
+// Must be last loaded middleware
+// Handle errors
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
