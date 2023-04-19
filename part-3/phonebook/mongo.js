@@ -25,23 +25,23 @@ const Person = mongoose.model('Person', personSchema);
 
 // Create person in database
 const person = new Person({
-	name: phonename,
-	number: phonenumber,
+  name: phonename,
+  number: phonenumber,
 });
 
 if (process.argv.length > 3) {
-	person.save().then((result) => {
-		console.log(`Added: ${phonename}, Number: ${phonenumber} to phonebook`);
-		mongoose.connection.close();
-	});
+  person.save().then(() => {
+    console.log(`Added: ${phonename}, Number: ${phonenumber} to phonebook`);
+    mongoose.connection.close();
+  });
 }
 
 if (process.argv.length === 3) {
-	// Display all people in database
-	Person.find({}).then((result) => {
-		result.forEach((person) => {
-			console.log(person);
-		});
-		mongoose.connection.close();
-	});
+  // Display all people in database
+  Person.find({}).then((result) => {
+    result.forEach((person) => {
+      console.log(person);
+    });
+    mongoose.connection.close();
+  });
 }

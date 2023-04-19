@@ -7,12 +7,16 @@ mongoose.connect(url)
     .then((result) => {
         console.log('Connected to DB')
     })
-    .catch((error) => [
+    .catch((error) => {
         console.log(`Error connecting to DB: ${error.message}`)
-    ])
+		})
 
 const noteSchema = new mongoose.Schema({
-  content: String,
+  content: {
+		type: String,
+		minLength: 5,
+		required: true,
+	},
   important: Boolean,
 })
 

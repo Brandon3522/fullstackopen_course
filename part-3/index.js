@@ -28,9 +28,13 @@ const unknownEndpoint = (req, res) => {
 // Middleware error handler
 const errorHandler = (error, request, response, next) => {
 	console.log(error.message);
+	
 
 	if (error.name === 'CastError') {
 		return response.status(400).send({error: 'Malformattd id'});
+	}
+	if (error.name === 'ValidationError') {
+		return response.status(400).send({error: error.message})
 	}
 
 	next(error);
@@ -70,12 +74,14 @@ let notes = [
 // })
 
 // Get notes
-app.get('/api/notes', (request, response) => {
+app.get('/api/notes', (request, response, next) => {
 	// MongoDB
 	Note.find({})
 		.then((notes) => {
-			console.log(notes);
 			response.json(notes)
+		})
+		.catch(error => {
+			next(error);
 		})
 })
 
@@ -123,15 +129,13 @@ app.delete('/api/notes/:id', (request, response, next) => {
 
 // Update note
 app.put('/api/notes/:id', (request, response, next) => {
-	const body = request.body;
-	console.log('Updating note')
+	const { content, important } = request.body;
 
-	const note = {
-		content: body.content,
-		important: body.important
-	}
-
-	Note.findByIdAndUpdate(request.params.id, note, { new: true })
+	Note.findByIdAndUpdate(
+		request.params.id, 
+		{ content, important }, 
+		{ new: true, runValidators: true, context: 'query' }
+	)
 		.then((updatedNote) => {
 			response.json(updatedNote);
 		})
@@ -141,7 +145,7 @@ app.put('/api/notes/:id', (request, response, next) => {
 })
 
 // Create new note
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', (request, response, next) => {
 	/* const maxId = notes.length > 0
 		? Math.max(...notes.map((n) => n.id))
 		: 0
@@ -156,10 +160,6 @@ app.post('/api/notes', (request, response) => {
 	// Database request
 	const body = request.body;
 
-	if (body.content === undefined) {
-		return response.status(404).json({error: 'Content missing'});
-	}
-
 	const note = new Note({
 		content: body.content,
 		important: body.important || false,
@@ -171,7 +171,7 @@ app.post('/api/notes', (request, response) => {
 			response.json(savedNote);
 		})
 		.catch((error) => {
-			console.log(`Error: ${error.message}`)
+			next(error);
 		})
 
 })
