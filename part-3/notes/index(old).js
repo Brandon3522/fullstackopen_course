@@ -20,6 +20,8 @@ app.use(express.json());
 // Allow requests from all origins
 app.use(cors())
 
+
+
 // Catch unknown endpoints in API
 const unknownEndpoint = (req, res) => {
 	res.status(404).send({error: 'Unknown endpoint'});
@@ -186,4 +188,3 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);
 })
-

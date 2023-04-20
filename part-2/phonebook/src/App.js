@@ -19,19 +19,20 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  // GET persons from local server
+  // GET persons from database
   useEffect(() => {
     console.log('effect');
-    personService.getAll().then((initialPeople) => {
-      console.log('Promise fulfilled');
-      setPersons(initialPeople);
-    });
+    personService
+			.getAll()
+			.then((initialPeople) => {
+				console.log('Promise fulfilled');
+				setPersons(initialPeople);
+			});
 
     setLoading(false);
   }, []);
 
-  // Phonebook
-  // Fix adding duplicate name to database
+  // Add to phonebook
   const addPerson = (event) => {
     event.preventDefault();
     const isEqual = doesPersonExist(newName);
