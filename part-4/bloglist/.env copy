@@ -1,0 +1,2 @@
+MONGODB_URI = mongodb+srv://tylersitz17:Skate123@cluster0.l1vtbms.mongodb.net/phonebookApp?retryWrites=true&w=majority
+PORT = 3002
