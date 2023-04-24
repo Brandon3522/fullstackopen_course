@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const dummy = (blogs) => {
   return 1;
 };
@@ -20,8 +21,85 @@ const favoriteBlog = (blogs) => {
   return blogs.length === 0 ? 0 : favorite;
 };
 
+// Find author with the most blogs,
+// Return author and number of blogs
+// Horribly inefficient !!!!!!!
+const mostBlogs = (blogs) => {
+  maxAuthor = '';
+  numberOfBlogs = 0;
+  maxBlogs = 0;
+  currentAuthor = '';
+
+  if (blogs.length === 0) {
+    return 0;
+  }
+
+  for (const blog of blogs) {
+    currentAuthor = blog.author;
+    for (const blog of blogs) {
+      if (currentAuthor === blog.author) {
+        numberOfBlogs += 1;
+      }
+    }
+
+    if (numberOfBlogs > maxBlogs) {
+      maxBlogs = numberOfBlogs;
+      maxAuthor = blog.author;
+    }
+    numberOfBlogs = 0;
+  }
+
+  for (const blog of blogs) {
+    if (blog.author === maxAuthor) {
+      numberOfBlogs += 1;
+    }
+  }
+
+  const author = {
+    author: maxAuthor,
+    blogs: maxBlogs,
+  };
+
+  return author;
+};
+
+// Horribly inefficient !!!
+const mostLikes = (blogs) => {
+  numberOfLikes = 0;
+  maxLikes = 0;
+  maxAuthor = '';
+
+  if (blogs.length === 0) {
+    return 0;
+  }
+
+  for (const blog of blogs) {
+    currentAuthor = blog.author;
+    for (const blog of blogs) {
+      if (currentAuthor === blog.author) {
+        numberOfLikes += blog.likes;
+      }
+    }
+
+    if (numberOfLikes > maxLikes) {
+      maxLikes = numberOfLikes;
+      maxAuthor = blog.author;
+    }
+    numberOfLikes = 0;
+  }
+
+  const author = {
+    author: maxAuthor,
+    likes: maxLikes,
+  };
+
+  return author;
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
+  mostLikes,
 };
