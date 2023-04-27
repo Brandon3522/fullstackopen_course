@@ -8,10 +8,14 @@ const unknownEndpoint = (request, response) => {
 // Error Handler
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
+  console.log(error.message);
 
   if (error.message === 'CastError') {
     return response.status(400).send({ error: 'Malformatted Id' });
-  } else if (error.message === 'ValidationError') {
+  } else if (
+    error.message.match(/validation failed/) ||
+    error.message === 'Validation Error'
+  ) {
     return response.status(400).json({ error: error.message });
   }
 
@@ -20,5 +24,5 @@ const errorHandler = (error, request, response, next) => {
 
 module.exports = {
   errorHandler,
-	unknownEndpoint
+  unknownEndpoint,
 };

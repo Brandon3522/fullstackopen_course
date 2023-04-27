@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const dummy = (blogs) => {
   return 1;
 };
@@ -25,10 +24,10 @@ const favoriteBlog = (blogs) => {
 // Return author and number of blogs
 // Horribly inefficient !!!!!!!
 const mostBlogs = (blogs) => {
-  maxAuthor = '';
-  numberOfBlogs = 0;
-  maxBlogs = 0;
-  currentAuthor = '';
+  let maxAuthor = '';
+  let numberOfBlogs = 0;
+  let maxBlogs = 0;
+  let currentAuthor = '';
 
   if (blogs.length === 0) {
     return 0;
@@ -64,17 +63,19 @@ const mostBlogs = (blogs) => {
 };
 
 // Horribly inefficient !!!
+// Find author with most likes,
+// Return author and number of total likes
 const mostLikes = (blogs) => {
-  numberOfLikes = 0;
-  maxLikes = 0;
-  maxAuthor = '';
+  let numberOfLikes = 0;
+  let maxLikes = 0;
+  let maxAuthor = '';
 
   if (blogs.length === 0) {
     return 0;
   }
 
   for (const blog of blogs) {
-    currentAuthor = blog.author;
+    let currentAuthor = blog.author;
     for (const blog of blogs) {
       if (currentAuthor === blog.author) {
         numberOfLikes += blog.likes;
