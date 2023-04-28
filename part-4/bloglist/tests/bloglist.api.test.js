@@ -5,10 +5,11 @@ const supertest = require('supertest');
 
 // Helper functions
 const helper = require('./test_helper');
+const blog = require('../models/blog');
 
 const api = supertest(app);
 
-// Initialize notes, maybe abstract to helper module
+// Initialize notes from helper
 
 // Initialize database with notes
 beforeEach(async () => {
@@ -20,70 +21,146 @@ beforeEach(async () => {
   }
 });
 
-// Tests, refactor api call to async / await after each test passes
-test('Get request returns correct amount of blog posts in json', async () => {
-  const response = await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
+// Tests
+describe('Requesting blogs from database', () => {
+  test('Get request returns correct amount of blog posts in json', async () => {
+    const response = await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-  expect(response.body).toHaveLength(helper.initialBlogs.length);
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test('Verify existence of unique id', async () => {
+    const blogs = await helper.blogsInDb();
+
+    expect(blogs[0].id).toBeDefined();
+  });
 });
 
-test('Verify existence of unique id', async () => {
-  const blogs = await helper.blogsInDb();
+describe('Creating a blog', () => {
+  test('Create new blog successfully', async () => {
+    const newBlog = {
+      title: 'test3 title',
+      author: 'test3 author',
+      url: 'test3 url',
+      likes: 5,
+    };
 
-  expect(blogs[0].id).toBeDefined();
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogs = await helper.blogsInDb();
+    const titles = blogs.map((blog) => blog.title);
+
+    expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
+    expect(titles).toContain('test3 title');
+  });
+
+  test('Likes property should be set to 0 if missing', async () => {
+    const newBlog = {
+      title: 'test4 title',
+      author: 'test4 author',
+      url: 'test4 url',
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogs = await helper.blogsInDb();
+    expect(blogs[2].likes).toBe(0);
+  });
+
+  test('Blog missing title returns Bad Request', async () => {
+    const newBlog = {
+      author: 'test4 author',
+      url: 'test4 url',
+      likes: 5,
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+  });
 });
 
-test('Create new blog successfully', async () => {
-  const newBlog = {
-    title: 'test3 title',
-    author: 'test3 author',
-    url: 'test3 url',
-    likes: 5,
-  };
+describe('Deleting a blog', () => {
+  test('Successfully deleted a blog', async () => {
+    // Get blog
+    const blogsAtStart = await helper.blogsInDb();
+    const blog = blogsAtStart[0];
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/);
+    // Make request
+    await api.delete(`/api/blogs/${blog.id}`).expect(204);
 
-  const blogs = await helper.blogsInDb();
-  const titles = blogs.map((blog) => blog.title);
+    // Verify length
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
 
-  expect(blogs).toHaveLength(helper.initialBlogs.length + 1);
-  expect(titles).toContain('test3 title');
+    // Verify array doesn't contain blog
+    const titles = blogsAtEnd.map((blog) => blog.title);
+    expect(titles).not.toContain('test1 title');
+  });
+
+  test('Error if blog does not exist', async () => {
+    const invalidId = 123456789;
+
+    await api.delete(`/api/blogs/${invalidId}`).expect(400);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+  });
 });
 
-test('Likes property should be set to 0 if missing', async () => {
-  const newBlog = {
-    title: 'test4 title',
-    author: 'test4 author',
-    url: 'test4 url',
-  };
+describe('Updating a blog', () => {
+  test('Successfully updates a blog', async () => {
+    // Info to update
+    const updatedBlog = {
+      title: 'blog1',
+      author: 'newAuthor',
+      url: 'newURL',
+      likes: 1000,
+    };
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/);
+    const blogsAtStart = await helper.blogsInDb();
+    const blog = blogsAtStart[0];
 
-  const blogs = await helper.blogsInDb();
-  expect(blogs[2].likes).toBe(0);
-});
+    // Make PUT request
+    await api
+      .put(`/api/blogs/${blog.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-test('Blog missing title returns Bad Request', async () => {
-  const newBlog = {
-    author: 'test4 author',
-    url: 'test4 url',
-    likes: 5,
-  };
+    // Expect blog to contain updated info
+    const blogsAtEnd = await helper.blogsInDb();
+    const endBlog = blogsAtEnd[0];
 
-  const response = await api.post('/api/blogs').send(newBlog).expect(400);
+    expect(endBlog.title).toContain('blog1');
+    expect(endBlog.author).toContain('newAuthor');
+    expect(endBlog.url).toContain('newURL');
+    expect(endBlog.likes).toBe(1000);
+  });
 
-  console.log(`Response: ${response}`);
+  test('Return error with invalid ID', async () => {
+    // Info to update
+    const updatedBlog = {
+      title: 'blog1',
+      author: 'newAuthor',
+      url: 'newURL',
+      likes: 1000,
+    };
+
+    const invalidId = 123456789;
+
+    // Make PUT request
+    await api.put(`/api/blogs/${invalidId}`).send(updatedBlog).expect(400);
+  });
 });
 
 // Close the connection with afterAll

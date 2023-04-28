@@ -10,7 +10,7 @@ const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
   console.log(error.message);
 
-  if (error.message === 'CastError') {
+  if (error.message.match(/ObjectId failed/) || error.message === 'CastError') {
     return response.status(400).send({ error: 'Malformatted Id' });
   } else if (
     error.message.match(/validation failed/) ||
