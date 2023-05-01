@@ -4,8 +4,7 @@ const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
 // Controllers
 const blogsRouter = require('./controllers/blogs');
-// Models
-const blog = require('./models/blog');
+require('express-async-errors'); // Catch async errors
 
 const mongoose = require('mongoose');
 const express = require('express');
@@ -19,9 +18,9 @@ mongoose
     logger.error('Error connecting', error.message);
   });
 
-app.use(cors())
+app.use(cors());
 //app.use(express.static('build'));
-app.use(express.json())
+app.use(express.json());
 
 // API endpoints
 app.use('/api/blogs', blogsRouter);

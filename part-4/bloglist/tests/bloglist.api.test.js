@@ -5,7 +5,6 @@ const supertest = require('supertest');
 
 // Helper functions
 const helper = require('./test_helper');
-const blog = require('../models/blog');
 
 const api = supertest(app);
 
@@ -141,9 +140,9 @@ describe('Updating a blog', () => {
     const blogsAtEnd = await helper.blogsInDb();
     const endBlog = blogsAtEnd[0];
 
-    expect(endBlog.title).toContain('blog1');
-    expect(endBlog.author).toContain('newAuthor');
-    expect(endBlog.url).toContain('newURL');
+    expect(endBlog.title).toBe('blog1');
+    expect(endBlog.author).toBe('newAuthor');
+    expect(endBlog.url).toBe('newURL');
     expect(endBlog.likes).toBe(1000);
   });
 
