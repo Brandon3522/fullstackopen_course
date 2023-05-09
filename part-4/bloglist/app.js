@@ -4,6 +4,7 @@ const logger = require('./utils/logger');
 const middleware = require('./utils/middleware');
 // Controllers
 const blogsRouter = require('./controllers/blogs');
+const usersRouter = require('./controllers/users');
 require('express-async-errors'); // Catch async errors
 
 const mongoose = require('mongoose');
@@ -24,9 +25,11 @@ app.use(express.json());
 
 // API endpoints
 app.use('/api/blogs', blogsRouter);
+app.use('/api/users', usersRouter);
 
 // Middleware
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
+app.use(middleware.requestLogger);
 
 module.exports = app;
