@@ -5,6 +5,7 @@ const middleware = require('./utils/middleware');
 // Controllers
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
+const loginRouter = require('./controllers/login');
 require('express-async-errors'); // Catch async errors
 
 const mongoose = require('mongoose');
@@ -26,6 +27,7 @@ app.use(express.json());
 // API endpoints
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter);
 
 // Middleware
 app.use(middleware.unknownEndpoint);
