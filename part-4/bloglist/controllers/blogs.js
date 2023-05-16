@@ -2,32 +2,30 @@ const blogRouter = require('express').Router();
 const Blog = require('../models/blog');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const logger = require('../utils/logger');
+const middleware = require('../utils/middleware');
 
 // Token helper function
 // Isolate token from authorization header
-const getTokenFrom = (request) => {
+/* const getTokenFrom = (request) => {
   const authorization = request.get('authorization');
   if (authorization && authorization.startsWith('bearer ')) {
+    logger.info(`Authorization: ${authorization}`);
     return authorization.replace('bearer ', '');
   }
   return null;
-};
+}; */
 
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
   response.json(blogs);
 });
 
-blogRouter.post('/', async (request, response, next) => {
+blogRouter.post('/', middleware.userExtractor, async (request, response, next) => {
   try {
     const body = request.body;
 
-    const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
-    if (!decodedToken) {
-      return response.status(401).json({ error: 'Invalid token' });
-    }
-
-    const user = await User.findById(decodedToken.id);
+    const user = request.user;
 
     const blog = new Blog({
       title: body.title,
@@ -48,11 +46,19 @@ blogRouter.post('/', async (request, response, next) => {
   }
 });
 
-blogRouter.delete('/:id', async (request, response, next) => {
+blogRouter.delete('/:id', middleware.userExtractor, async (request, response, next) => {
   try {
-    // Find and delete blog with given id
-    await Blog.findByIdAndRemove(request.params.id);
-    response.status(204).end();
+    const user = request.user;
+
+    const blog = await Blog.findById(request.params.id);
+
+    if (blog && blog.user._id.toString() === user._id.toString()) {
+      // Find and delete blog with given id
+      await Blog.findByIdAndRemove(request.params.id);
+      response.status(204).end();
+    } else {
+      return response.status(401).json({ error: 'Invalid blog or user' });
+    }
   } catch (error) {
     next(error);
   }
