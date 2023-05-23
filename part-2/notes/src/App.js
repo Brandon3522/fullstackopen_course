@@ -56,8 +56,6 @@ const App = () => {
       setErrorMessage('Invalid credentials');
       setTimeout(() => {
         setErrorMessage(null);
-        setUsername('');
-        setPassword('');
       }, 5000);
     }
   };
