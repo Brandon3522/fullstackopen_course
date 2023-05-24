@@ -21,12 +21,12 @@ function Login({ username, setUsername, password, setPassword, handleLogin }) {
           value={password}
           onChange={({ target }) => setPassword(target.value)}
         ></input>
-				<br />
-				<br />
-				
-				<div>
-					<button type='submit'>Login</button>
-				</div>
+        <br />
+        <br />
+
+        <div>
+          <button type="submit">Login</button>
+        </div>
       </form>
     </>
   );
