@@ -6,12 +6,13 @@ import loginService from './services/login';
 import BlogForm from './components/BlogForm';
 import SuccessMessage from './components/SuccessMessage';
 import ErrorMessage from './components/ErrorMessage';
+import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [blogTitle, setBlogTitle] = useState('');
+  /* const [blogTitle, setBlogTitle] = useState('');
   const [blogAuthor, setBlogAuthor] = useState('');
-  const [blogUrl, setBlogUrl] = useState('');
+  const [blogUrl, setBlogUrl] = useState(''); */
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -63,23 +64,20 @@ const App = () => {
     setUser(null);
   };
 
-  const handleBlogCreation = async (event) => {
-    event.preventDefault();
+  const handleBlogCreation = async (blogObject) => {
     try {
-      const newBlog = {
+      // Replaced with component object parameter
+      /* const newBlog = {
         title: blogTitle,
         author: blogAuthor,
         url: blogUrl,
-      };
+      }; */
 
-      const returnedBlog = await blogService.createBlog(newBlog);
+      const returnedBlog = await blogService.createBlog(blogObject);
       setBlogs(blogs.concat(returnedBlog));
 
-      setBlogTitle('');
-      setBlogAuthor('');
-      setBlogUrl('');
       setSuccessMessage(
-        `A new blog, ${newBlog.title}, was created by ${newBlog.author}`
+        `A new blog, ${blogObject.title}, was created by ${blogObject.author}`
       );
       setTimeout(() => {
         setSuccessMessage(null);
@@ -121,15 +119,9 @@ const App = () => {
       <br />
 
       <div>
-        <BlogForm
-          handleBlogCreation={handleBlogCreation}
-          title={blogTitle}
-          setTitle={setBlogTitle}
-          author={blogAuthor}
-          setAuthor={setBlogAuthor}
-          url={blogUrl}
-          setUrl={setBlogUrl}
-        />
+        <Togglable buttonLabel={'Create Note'}>
+          <BlogForm handleBlogCreation={handleBlogCreation} />
+        </Togglable>
       </div>
 
       <h2>blogs</h2>

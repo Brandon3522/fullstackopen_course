@@ -1,17 +1,31 @@
 import React from 'react';
+import { useState } from 'react';
 
-function BlogForm({
-  handleBlogCreation,
-  title,
-  setTitle,
-  author,
-  setAuthor,
-  url,
-  setUrl,
-}) {
+function BlogForm({ handleBlogCreation }) {
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [url, setUrl] = useState('');
+
+	const addBlog = (event) => {
+		event.preventDefault();
+
+		const blogObject = {
+			title: title,
+			author: author,
+			url: url,
+		}
+
+		// Pass new blog to function
+		handleBlogCreation(blogObject);
+
+		setTitle('');
+		setAuthor('');
+		setUrl('');
+	}
+
   return (
     <>
-      <form onSubmit={handleBlogCreation}>
+      <form onSubmit={addBlog}>
         <label style={{ marginRight: 15 }} for="title">
           Title:{' '}
         </label>
