@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 import Note from './components/Note.js';
 import noteService from './services/notes.js';
 import loginService from './services/login.js';
 import Notification from './components/Notification';
 import Footer from './components/Footer';
+import Login from './components/Login';
+import Togglable from './components/Togglable';
+import NoteForm from './components/NoteForm';
 
 const App = () => {
   // Notes state
@@ -16,6 +19,9 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+	const [loginVisible, setLoginVisible] = useState(false);
+
+	const noteFormRef = useRef();
 
   // GET notes from local server
   useEffect(() => {
@@ -104,62 +110,55 @@ const App = () => {
 	*/
 
   // Note: Add with POST method
-  const addNote = (event) => {
-    event.preventDefault(); // Prevent page refresh
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-    };
-
-    noteService.create(noteObject).then((returnedNote) => {
-      setNotes(notes.concat(returnedNote));
-      setNewNote('');
+  const addNote = (noteObject) => {
+		noteFormRef.current.toggleVisibility();
+    noteService
+			.create(noteObject)
+			.then((returnedNote) => {
+      	setNotes(notes.concat(returnedNote));
     });
   };
 
   // Alternate method to save input
-  /*
 	const handleNoteChange = (event) => {
 		console.log(event.target.value);
 		setNewNote(event.target.value);
 	}
+	
+
+  /* const loginForm = () => {
+    const hideWhenVisible = { display: loginVisible ? 'none' : '' }
+		const showWhenVisible = { display: loginVisible ? '' : 'none' }
+
+		return (
+			<div>
+				<div style={hideWhenVisible}>
+					<button onClick={() => setLoginVisible(true)}>Login</button>
+				</div>
+
+				<div style={showWhenVisible}>
+					<Login 
+						username={username}
+						password={password}
+						setPassword={setPassword}
+						setUsername={setUsername}
+						handleLogin={handleLogin}
+					 />
+
+				<button onClick={() => setLoginVisible(false)}>Cancel</button>
+				</div>
+			</div>
+		)
+	};
 	*/
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        <label style={{ paddingRight: 5 }}>Username</label>
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <br />
-
-      <div>
-        <label style={{ paddingRight: 9 }}>Password</label>
-        <input
-          type="text"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <br />
-
-      <button type="submit">Login</button>
-    </form>
-  );
-
-  const noteForm = () => (
+  /* const noteForm = () => (
     <form onSubmit={addNote}>
       <input value={newNote} onChange={(e) => setNewNote(e.target.value)} />
       <button type="submit">Save</button>
     </form>
-  );
-
+  ); */
+ 
   if (loading) {
     return (
       <>
@@ -174,15 +173,29 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
 
-      {/* Conditionally render forms */}
-      {!user && loginForm()}
+      {/* Conditionally render forms -> replaced with togglable component */}
+      {/* {!user && loginForm()}
       {user && (
         <div>
           <p>{user.name} logged in</p>
           {noteForm()}
         </div>
       )}
-      <br />
+      <br /> */}
+
+			<Togglable buttonLabel='Login'>
+				<Login 
+					username={username}
+					password={password}
+					setPassword={setPassword}
+					setUsername={setUsername}
+					handleLogin={handleLogin}
+				/>
+			</Togglable>
+
+			<Togglable buttonLabel='New note' ref={noteFormRef}>
+				<NoteForm createNote={addNote}/>
+			</Togglable>
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
