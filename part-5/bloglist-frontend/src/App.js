@@ -74,7 +74,11 @@ const App = () => {
       }; */
 
       const returnedBlog = await blogService.createBlog(blogObject);
+			console.log(returnedBlog);
       setBlogs(blogs.concat(returnedBlog));
+
+			// 5.8: Return name of user that created a new blog
+			blogService.getAll().then((blogs) => setBlogs(blogs));
 
       setSuccessMessage(
         `A new blog, ${blogObject.title}, was created by ${blogObject.author}`
@@ -92,6 +96,33 @@ const App = () => {
       console.log(error.response.data.error);
     }
   };
+
+	const handleBlogUpdate = async (blogObject) => {
+		try {
+			const returnedBlog = await blogService.updateBlog(blogObject, blogObject.id);
+			console.log(returnedBlog);
+			setBlogs(blogs.map((blog) => blog.id !== blogObject.id ? blog : returnedBlog));
+
+			// 5.8: Return name of user that created a new blog
+			blogService.getAll().then((blogs) => setBlogs(blogs));
+
+			setSuccessMessage(
+        `${blogObject.title} has been updated`
+      );
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+			
+		} catch (error) {
+			setErrorMessage(
+        `Failed to create new blog: ${error.response.data.error}`
+      );
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+      console.log(error.response.data.error);
+		}
+	}
 
   if (!user) {
     return (
@@ -119,8 +150,8 @@ const App = () => {
       <br />
 
       <div>
-        <Togglable buttonLabel={'Create Note'}>
-          <BlogForm handleBlogCreation={handleBlogCreation} />
+        <Togglable buttonLabel={'Create Blog'}>
+          <BlogForm handleBlogCreation={handleBlogCreation} user={user} />
         </Togglable>
       </div>
 
@@ -130,7 +161,7 @@ const App = () => {
       <ErrorMessage message={errorMessage} />
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleBlogUpdate={handleBlogUpdate} />
       ))}
     </div>
   );

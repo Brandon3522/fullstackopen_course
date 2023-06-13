@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 
-function BlogForm({ handleBlogCreation }) {
+function BlogForm({ handleBlogCreation, user }) {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -13,7 +13,10 @@ function BlogForm({ handleBlogCreation }) {
 			title: title,
 			author: author,
 			url: url,
+			user: user.name
 		}
+
+		//console.log(user.name)
 
 		// Pass new blog to function
 		handleBlogCreation(blogObject);

@@ -25,8 +25,10 @@ blogRouter.post('/', middleware.userExtractor, async (request, response, next) =
   try {
     const body = request.body;
 
+		console.log(body);
+
     const user = request.user;
-		
+
     const blog = new Blog({
       title: body.title,
       author: body.author,
@@ -67,6 +69,8 @@ blogRouter.delete('/:id', middleware.userExtractor, async (request, response, ne
 blogRouter.put('/:id', async (request, response, next) => {
   try {
     const body = request.body;
+
+		console.log(body);
 
     const blogToUpdate = {
       title: body.title,
