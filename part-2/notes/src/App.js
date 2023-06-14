@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import './index.css';
 import Note from './components/Note.js';
@@ -19,9 +20,9 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-	const [loginVisible, setLoginVisible] = useState(false);
+  //const [loginVisible, setLoginVisible] = useState(false);
 
-	const noteFormRef = useRef();
+  const noteFormRef = useRef();
 
   // GET notes from local server
   useEffect(() => {
@@ -34,16 +35,16 @@ const App = () => {
     setLoading(false);
   }, []);
 
-	// Get logged in user if they exist
-	useEffect(() => {
-		const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser');
+  // Get logged in user if they exist
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser');
 
-		if (loggedUserJSON) {
-			const user = JSON.parse(loggedUserJSON); // Parse JSON back to javascript object
-			setUser(user);
-			noteService.setToken(user.token);
-		}
-	}, []);
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON); // Parse JSON back to javascript object
+      setUser(user);
+      noteService.setToken(user.token);
+    }
+  }, []);
 
   // Login
   const handleLogin = async (event) => {
@@ -53,8 +54,8 @@ const App = () => {
         username,
         password,
       });
-			window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user)); // Save user to localStorage
-			noteService.setToken(user.token);
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user)); // Save user to localStorage
+      noteService.setToken(user.token);
       setUser(user);
       setUsername('');
       setPassword('');
@@ -111,20 +112,20 @@ const App = () => {
 
   // Note: Add with POST method
   const addNote = (noteObject) => {
-		noteFormRef.current.toggleVisibility();
+    noteFormRef.current.toggleVisibility();
     noteService
-			.create(noteObject)
-			.then((returnedNote) => {
-      	setNotes(notes.concat(returnedNote));
-    });
+      .create(noteObject)
+      .then((returnedNote) => {
+        setNotes(notes.concat(returnedNote));
+      });
   };
 
   // Alternate method to save input
-	const handleNoteChange = (event) => {
-		console.log(event.target.value);
-		setNewNote(event.target.value);
-	}
-	
+  const handleNoteChange = (event) => {
+    console.log(event.target.value);
+    setNewNote(event.target.value);
+  };
+
 
   /* const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? 'none' : '' }
@@ -137,7 +138,7 @@ const App = () => {
 				</div>
 
 				<div style={showWhenVisible}>
-					<Login 
+					<Login
 						username={username}
 						password={password}
 						setPassword={setPassword}
@@ -158,7 +159,7 @@ const App = () => {
       <button type="submit">Save</button>
     </form>
   ); */
- 
+
   if (loading) {
     return (
       <>
@@ -183,19 +184,19 @@ const App = () => {
       )}
       <br /> */}
 
-			<Togglable buttonLabel='Login'>
-				<Login 
-					username={username}
-					password={password}
-					setPassword={setPassword}
-					setUsername={setUsername}
-					handleLogin={handleLogin}
-				/>
-			</Togglable>
+      <Togglable buttonLabel='Login'>
+        <Login
+          username={username}
+          password={password}
+          setPassword={setPassword}
+          setUsername={setUsername}
+          handleLogin={handleLogin}
+        />
+      </Togglable>
 
-			<Togglable buttonLabel='New note' ref={noteFormRef}>
-				<NoteForm createNote={addNote}/>
-			</Togglable>
+      <Togglable buttonLabel='New note' ref={noteFormRef}>
+        <NoteForm createNote={addNote}/>
+      </Togglable>
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>

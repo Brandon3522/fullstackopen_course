@@ -50,7 +50,7 @@ const App = () => {
         setLoginSuccessMessage(null);
       }, 5000);
     } catch (error) {
-      setLoginErrorMessage(`Invalid username or password`);
+      setLoginErrorMessage('Invalid username or password');
       setTimeout(() => {
         setLoginErrorMessage(null);
       }, 5000);
@@ -74,11 +74,11 @@ const App = () => {
       }; */
 
       const returnedBlog = await blogService.createBlog(blogObject);
-			console.log(returnedBlog);
+      console.log(returnedBlog);
       setBlogs(blogs.concat(returnedBlog));
 
-			// 5.8: Return name of user that created a new blog
-			blogService.getAll().then((blogs) => setBlogs(blogs));
+      // 5.8: Return name of user that created a new blog
+      blogService.getAll().then((blogs) => setBlogs(blogs));
 
       setSuccessMessage(
         `A new blog, ${blogObject.title}, was created by ${blogObject.author}`
@@ -97,32 +97,62 @@ const App = () => {
     }
   };
 
-	const handleBlogUpdate = async (blogObject) => {
-		try {
-			const returnedBlog = await blogService.updateBlog(blogObject, blogObject.id);
-			console.log(returnedBlog);
-			setBlogs(blogs.map((blog) => blog.id !== blogObject.id ? blog : returnedBlog));
-
-			// 5.8: Return name of user that created a new blog
-			blogService.getAll().then((blogs) => setBlogs(blogs));
-
-			setSuccessMessage(
-        `${blogObject.title} has been updated`
+  const handleBlogUpdate = async (blogObject) => {
+    try {
+      const returnedBlog = await blogService.updateBlog(
+        blogObject,
+        blogObject.id
       );
+      console.log(returnedBlog);
+      setBlogs(
+        blogs.map((blog) => (blog.id !== blogObject.id ? blog : returnedBlog))
+      );
+
+      // 5.8: Return name of user that created a new blog
+      blogService.getAll().then((blogs) => setBlogs(blogs));
+
+      setSuccessMessage(`${blogObject.title} has been updated`);
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
-			
-		} catch (error) {
-			setErrorMessage(
+    } catch (error) {
+      setErrorMessage(
         `Failed to create new blog: ${error.response.data.error}`
       );
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
       console.log(error.response.data.error);
-		}
-	}
+    }
+  };
+
+  const handleBlogDelete = async (blogObject) => {
+    if (window.confirm('Are you sure you want to delete this blog?')) {
+      try {
+        await blogService.deleteBlog(blogObject.id);
+        console.log(blogObject);
+        setBlogs(blogs.filter((blog) => blog.id !== blogObject.id));
+
+        setSuccessMessage(`${blogObject.title} has been deleted`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
+      } catch (error) {
+        setErrorMessage(
+          `Failed to create new blog: ${error.response.data.error}`
+        );
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
+        console.log(error.response.data.error);
+      }
+    }
+  };
+
+  // Comparator function
+  const compareLikes = (a, b) => {
+    return b.likes - a.likes;
+  };
 
   if (!user) {
     return (
@@ -160,8 +190,13 @@ const App = () => {
       <SuccessMessage message={successMessage} />
       <ErrorMessage message={errorMessage} />
 
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} handleBlogUpdate={handleBlogUpdate} />
+      {blogs.sort(compareLikes).map((blog) => (
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleBlogUpdate={handleBlogUpdate}
+          handleBlogDelete={handleBlogDelete}
+        />
       ))}
     </div>
   );

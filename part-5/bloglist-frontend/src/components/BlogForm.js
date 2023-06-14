@@ -6,30 +6,30 @@ function BlogForm({ handleBlogCreation, user }) {
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
 
-	const addBlog = (event) => {
-		event.preventDefault();
+  const addBlog = (event) => {
+    event.preventDefault();
 
-		const blogObject = {
-			title: title,
-			author: author,
-			url: url,
-			user: user.name
-		}
+    const blogObject = {
+      title: title,
+      author: author,
+      url: url,
+      user: user.name
+    };
 
-		//console.log(user.name)
+    //console.log(user.name)
 
-		// Pass new blog to function
-		handleBlogCreation(blogObject);
+    // Pass new blog to function
+    handleBlogCreation(blogObject);
 
-		setTitle('');
-		setAuthor('');
-		setUrl('');
-	}
+    setTitle('');
+    setAuthor('');
+    setUrl('');
+  };
 
   return (
     <>
       <form onSubmit={addBlog}>
-        <label style={{ marginRight: 15 }} for="title">
+        <label style={{ marginRight: 15 }} htmlFor="title">
           Title:{' '}
         </label>
         <input
@@ -40,7 +40,7 @@ function BlogForm({ handleBlogCreation, user }) {
         ></input>
         <br />
 
-        <label for="author">Author: </label>
+        <label htmlFor="author">Author: </label>
         <input
           type="text"
           name="author"
@@ -49,7 +49,7 @@ function BlogForm({ handleBlogCreation, user }) {
         ></input>
         <br />
 
-        <label style={{ marginRight: 15 }} for="url">
+        <label style={{ marginRight: 15 }} htmlFor="url">
           URL:{' '}
         </label>
         <input

@@ -70,7 +70,7 @@ blogRouter.put('/:id', async (request, response, next) => {
   try {
     const body = request.body;
 
-		console.log(body);
+    console.log(body);
 
     const blogToUpdate = {
       title: body.title,
