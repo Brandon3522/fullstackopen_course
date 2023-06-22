@@ -13,7 +13,7 @@ function BlogForm({ handleBlogCreation, user }) {
       title: title,
       author: author,
       url: url,
-      user: user.name
+      user: user.name,
     };
 
     //console.log(user.name)
@@ -35,6 +35,7 @@ function BlogForm({ handleBlogCreation, user }) {
         <input
           type="text"
           name="title"
+          id="title_input"
           value={title}
           onChange={({ target }) => setTitle(target.value)}
         ></input>
@@ -44,6 +45,7 @@ function BlogForm({ handleBlogCreation, user }) {
         <input
           type="text"
           name="author"
+          id="author_input"
           value={author}
           onChange={({ target }) => setAuthor(target.value)}
         ></input>
@@ -55,6 +57,7 @@ function BlogForm({ handleBlogCreation, user }) {
         <input
           type="text"
           name="url"
+          id="url_input"
           value={url}
           onChange={({ target }) => setUrl(target.value)}
         ></input>

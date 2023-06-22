@@ -14,7 +14,7 @@ test('renders content', () => {
   // Create component
   render(<Note note={note} />);
 
-  // Debug
+  // Print HTML of component to console
   screen.debug();
 
   // Search for element with given note content
