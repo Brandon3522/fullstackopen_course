@@ -9,6 +9,7 @@ import Footer from './components/Footer';
 import Login from './components/Login';
 import Togglable from './components/Togglable';
 import NoteForm from './components/NoteForm';
+import SuccessMessage from './components/SuccessMessage';
 
 const App = () => {
   // Notes state
@@ -17,6 +18,8 @@ const App = () => {
   const [showAll, setShowAll] = useState(true);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [loginSuccessMessage, setLoginSuccessMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
@@ -59,6 +62,10 @@ const App = () => {
       setUser(user);
       setUsername('');
       setPassword('');
+      setLoginSuccessMessage(`${user.username} logged in successfully`);
+      setTimeout(() => {
+        setLoginSuccessMessage(null);
+      }, 5000);
     } catch (error) {
       setErrorMessage('Invalid credentials');
       setTimeout(() => {
@@ -113,11 +120,13 @@ const App = () => {
   // Note: Add with POST method
   const addNote = (noteObject) => {
     noteFormRef.current.toggleVisibility();
-    noteService
-      .create(noteObject)
-      .then((returnedNote) => {
-        setNotes(notes.concat(returnedNote));
-      });
+    noteService.create(noteObject).then((returnedNote) => {
+      setNotes(notes.concat(returnedNote));
+      setSuccessMessage(`${returnedNote.content} saved`);
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+    });
   };
 
   // Alternate method to save input
@@ -125,7 +134,6 @@ const App = () => {
     console.log(event.target.value);
     setNewNote(event.target.value);
   };
-
 
   /* const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? 'none' : '' }
@@ -174,6 +182,10 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={errorMessage} />
 
+      <SuccessMessage message={loginSuccessMessage} />
+
+      <SuccessMessage message={successMessage} />
+
       {/* Conditionally render forms -> replaced with togglable component */}
       {/* {!user && loginForm()}
       {user && (
@@ -184,7 +196,7 @@ const App = () => {
       )}
       <br /> */}
 
-      <Togglable buttonLabel='Login'>
+      <Togglable buttonLabel="Login">
         <Login
           username={username}
           password={password}
@@ -194,8 +206,8 @@ const App = () => {
         />
       </Togglable>
 
-      <Togglable buttonLabel='New note' ref={noteFormRef}>
-        <NoteForm createNote={addNote}/>
+      <Togglable buttonLabel="New note" ref={noteFormRef}>
+        <NoteForm createNote={addNote} />
       </Togglable>
 
       <div>

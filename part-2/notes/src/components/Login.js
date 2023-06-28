@@ -1,7 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const Login = ({ handleLogin, username, setUsername, password, setPassword }) => {
+const Login = ({
+  handleLogin,
+  username,
+  setUsername,
+  password,
+  setPassword,
+}) => {
   return (
     <div>
       <h2>Login</h2>
@@ -12,6 +18,7 @@ const Login = ({ handleLogin, username, setUsername, password, setPassword }) =>
           <input
             type="text"
             value={username}
+            id="username"
             name="Username"
             onChange={({ target }) => setUsername(target.value)}
           />
@@ -23,13 +30,16 @@ const Login = ({ handleLogin, username, setUsername, password, setPassword }) =>
           <input
             type="text"
             value={password}
+            id="password"
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
         <br />
 
-        <button type="submit">Login</button>
+        <button id="login-button" type="submit">
+          Login
+        </button>
       </form>
     </div>
   );
