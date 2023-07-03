@@ -1,18 +1,19 @@
 describe('Note app', () => {
   // Executed before each test
   beforeEach(() => {
-    // Reset database
-    cy.request('POST', 'http://localhost:3001/api/testing/reset');
+    // Reset database, base backend URL in config file
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`);
     // Generate user
     const user = {
       name: 'Brandon',
       username: 'Brandon',
       password: 'password',
     };
-    // Create user
-    cy.request('POST', 'http://localhost:3001/api/users/', user);
+    // Create user, base backend URL in config file
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user);
 
-    cy.visit('http://localhost:3000');
+    // Uses base URL in config file
+    cy.visit('');
   });
 
   it('front page opened', () => {
@@ -55,10 +56,8 @@ describe('Note app', () => {
   describe('When logged in', () => {
     // Login before each test
     beforeEach(() => {
-      cy.contains('Login').click(); // Search for login button and click
-      cy.get('#username').type('Brandon');
-      cy.get('#password').type('password');
-      cy.get('#login-button').click();
+      // Uses function from cypress commands
+      cy.login({ username: 'Brandon', password: 'password' });
     });
 
     it('A new note can be created', () => {
@@ -68,21 +67,28 @@ describe('Note app', () => {
       cy.contains('a new note created by cypress saved');
     });
 
-    describe('a note exists', () => {
-      // Create new note before each test
+    describe('several notes exist', () => {
+      // Create new notes before each test
       beforeEach(() => {
+        // First note
         cy.contains('New note').click();
-        cy.get('#note-input').type('another note created by cypress');
+        cy.get('#note-input').type('first note');
         cy.contains('Save').click();
+
+        // Second note
+        cy.contains('New note').click();
+        cy.get('#note-input').type('second note');
+        cy.contains('Save').click();
+        /* cy.createNote({ content: 'first note', important: false });
+        cy.createNote({ content: 'second note', important: false });
+        cy.createNote({ content: 'third note', important: false }); */
       });
 
       // Test clicking the important button
-      it('can be made not important', function () {
-        cy.contains('another note created by cypress');
-        cy.contains('Make not important').click();
+      it.only('can be made not important', function () {
+        cy.get('.note').contains('second note').contains('Make not important').click();
 
-        cy.contains('another note created by cypress');
-        cy.contains('Make important');
+        cy.get('.note').contains('second note').contains('Make important');
       });
     });
   });

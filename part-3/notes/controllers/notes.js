@@ -39,6 +39,7 @@ notesRouter.get('/:id', async (request, response, next) => {
 
 const getTokenFrom = (request) => {
 	const authorization = request.get('authorization');
+	console.log(authorization)
 	if (authorization && authorization.startsWith('bearer ')) {
 		return authorization.replace('bearer ', '');
 	}
@@ -47,6 +48,7 @@ const getTokenFrom = (request) => {
 
 notesRouter.post('/', async (request, response, next) => {
   const body = request.body;
+	console.log(body);
 
 	const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
 	if (!decodedToken.id) {

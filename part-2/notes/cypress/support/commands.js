@@ -23,3 +23,45 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+// Login user, store user info in local storage
+Cypress.Commands.add('login', ({ username, password }) => {
+  cy.request('POST', 'http://localhost:3001/api/login', {
+    username,
+    password,
+  }).then(({ body }) => {
+    localStorage.setItem('loggedNoteappUser', JSON.stringify(body));
+    // Uses base URL in config file
+    cy.visit('');
+  });
+});
+
+// Create note, user must be logged in to get token from local storage
+/* Cypress.Commands.add('createNote', ({ content, important }) => {
+  cy.request({
+    url: 'http://localhost:3001/api/notes',
+    method: 'POST',
+    body: { content, important },
+    headers: {
+      'Authorization': `bearer 
+			${JSON.parse(localStorage.getItem('loggedNoteappUser')).token}`,
+    },
+  });
+
+  cy.visit('');
+}); */
+
+Cypress.Commands.add('createNote', ({ content, important }) => {
+  cy.request({
+    url: 'http://localhost:3001/api/notes',
+    method: 'POST',
+    body: { content, important },
+    headers: {
+      Authorization: `Bearer ${
+        JSON.parse(localStorage.getItem('loggedNoteappUser')).token
+      }`,
+    },
+  });
+
+  cy.visit('http://localhost:3000');
+});
