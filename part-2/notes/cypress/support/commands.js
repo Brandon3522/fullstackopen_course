@@ -37,21 +37,20 @@ Cypress.Commands.add('login', ({ username, password }) => {
 });
 
 // Create note, user must be logged in to get token from local storage
-/* Cypress.Commands.add('createNote', ({ content, important }) => {
+Cypress.Commands.add('createNote', ({ content, important }) => {
   cy.request({
     url: 'http://localhost:3001/api/notes',
     method: 'POST',
     body: { content, important },
     headers: {
-      'Authorization': `bearer 
-			${JSON.parse(localStorage.getItem('loggedNoteappUser')).token}`,
+      Authorization: `bearer ${JSON.parse(localStorage.getItem('loggedNoteappUser')).token}`,
     },
   });
 
   cy.visit('');
-}); */
+});
 
-Cypress.Commands.add('createNote', ({ content, important }) => {
+/* Cypress.Commands.add('createNote', ({ content, important }) => {
   cy.request({
     url: 'http://localhost:3001/api/notes',
     method: 'POST',
@@ -64,4 +63,4 @@ Cypress.Commands.add('createNote', ({ content, important }) => {
   });
 
   cy.visit('http://localhost:3000');
-});
+}); */

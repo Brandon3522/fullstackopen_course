@@ -79,9 +79,9 @@ describe('Note app', () => {
         cy.contains('New note').click();
         cy.get('#note-input').type('second note');
         cy.contains('Save').click();
-        /* cy.createNote({ content: 'first note', important: false });
-        cy.createNote({ content: 'second note', important: false });
-        cy.createNote({ content: 'third note', important: false }); */
+        // cy.createNote({ content: 'first note', important: false });
+        // cy.createNote({ content: 'second note', important: false });
+        // cy.createNote({ content: 'third note', important: false });
       });
 
       // Test clicking the important button
