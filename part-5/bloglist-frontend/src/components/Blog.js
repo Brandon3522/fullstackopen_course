@@ -55,26 +55,26 @@ const Blog = ({ blog, handleBlogUpdate, handleBlogDelete }) => {
     <div style={blogStyle}>
       <div style={hideWhenVisible}>
         {blog.title} by {blog.author}
-        <button style={{ marginLeft: '10px' }} onClick={setVisibility}>
+        <button className='viewBlog-button' style={{ marginLeft: '10px' }} onClick={setVisibility}>
           View
         </button>
       </div>
       <div style={showWhenVisible}>
         {blog.title} by {blog.author}
-        <button style={{ marginLeft: '10px' }} onClick={setVisibility}>
+        <button className='hideBlog-button' style={{ marginLeft: '10px' }} onClick={setVisibility}>
           Hide
         </button>
         <br />
         {blog.url}
         <br />
         {blog.likes}
-        <button onClick={updateBlog} style={{ marginLeft: '10px' }}>Likes</button>
+        <button className='addLike-button' onClick={updateBlog} style={{ marginLeft: '10px' }}>Likes</button>
         <br />
         {blog.user.name === undefined || blog.user.name === null
           ? ''
           : blog.user.name}
         <span>
-          <button onClick={deleteBlog} style={{ marginLeft: '10px' }}>Delete</button>
+          <button className='deleteBlog-button' onClick={deleteBlog} style={{ marginLeft: '10px' }}>Delete</button>
         </span>
       </div>
     </div>

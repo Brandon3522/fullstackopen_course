@@ -64,7 +64,7 @@ function BlogForm({ handleBlogCreation, user }) {
         <br />
         <br />
 
-        <button type="submit">Create</button>
+        <button className='saveBlog-button' type="submit">Create</button>
       </form>
     </>
   );

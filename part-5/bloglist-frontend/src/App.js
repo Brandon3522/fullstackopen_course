@@ -26,7 +26,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedInUser = window.localStorage.getItem('loggedNoteappUser');
+    const loggedInUser = window.localStorage.getItem('loggedBlogappUser');
 
     if (loggedInUser) {
       const user = JSON.parse(loggedInUser);
@@ -39,7 +39,7 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await loginService.login({ username, password });
-      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user));
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user));
       setUser(user);
       blogService.setToken(user.token);
       console.log(`User token: ${user.token}`);
@@ -60,7 +60,7 @@ const App = () => {
 
   const handleLogout = () => {
     // event.preventDefault();
-    window.localStorage.removeItem('loggedNoteappUser');
+    window.localStorage.removeItem('loggedBlogappUser');
     setUser(null);
   };
 
