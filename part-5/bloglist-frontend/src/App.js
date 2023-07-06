@@ -139,7 +139,7 @@ const App = () => {
         }, 5000);
       } catch (error) {
         setErrorMessage(
-          `Failed to create new blog: ${error.response.data.error}`
+          `Failed to delete blog: ${error.response.data.error}`
         );
         setTimeout(() => {
           setErrorMessage(null);
@@ -175,7 +175,7 @@ const App = () => {
       {user && <div> {user.username} logged in </div>}
       <br />
       <div>
-        <button onClick={handleLogout}>Logout</button>
+        <button className='logout-button' onClick={handleLogout}>Logout</button>
       </div>
       <br />
 

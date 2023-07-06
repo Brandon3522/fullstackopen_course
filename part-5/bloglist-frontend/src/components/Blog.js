@@ -52,7 +52,7 @@ const Blog = ({ blog, handleBlogUpdate, handleBlogDelete }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       <div style={hideWhenVisible}>
         {blog.title} by {blog.author}
         <button className='viewBlog-button' style={{ marginLeft: '10px' }} onClick={setVisibility}>
