@@ -1,0 +1,5 @@
+{
+	"compilerOptions": {
+		"noImplicitAny": false // doesn't require types for all variable used
+	}
+}
