@@ -8,8 +8,36 @@ interface ExerciseStats {
 	average: number
 }
 
-// Calculates the average time of daily exercise hours and compares it to the target amount of daily 
-// hours and returns an object
+interface CLStats {
+	targetHours: number,
+	exerciseHours: number[]	
+}
+
+const parseArguments0 = (args: string[]) => {
+	if (args.length < 4) {
+		throw new Error('Not enough arguments');
+	}
+
+	// Get only input arguments
+	let slicedArray = args.slice(3)
+
+	// Check if arguments are numbers
+	let allNumbers = slicedArray.every((num) => !isNaN(Number(num)));
+
+	if (!isNaN(Number(args[2])) && allNumbers) {
+		return {
+			targetHours: Number(args[2]),
+			exerciseHours: args.slice(3).map(Number) // Change each value to a number
+		}
+	}
+	else {
+		throw new Error('All arguments must be numbers');
+	} 
+}	
+
+// Calculates the average time of daily exercise hours and compares it to the target amount of 
+// daily hours
+// returns an ExerciseStats object
 const calculateExercises = (exerciseHours: number[], targetHours: number): ExerciseStats => {
 	const totalDays = exerciseHours.length;
 
@@ -101,4 +129,15 @@ const ratingDescription = (rating: number): string => {
 	}
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+console.log(calculateExercises([1, 0, 2, 4.5, 0, 3, 1, 0, 4], 2));
+
+// Exercise 9.3
+try {
+	const {targetHours, exerciseHours} = parseArguments0(process.argv);
+	console.log(`Target hours: ${targetHours}, exercise hours: ${exerciseHours}`);
+	console.log(calculateExercises(exerciseHours, targetHours));
+} catch (error: unknown) {
+	if (error instanceof Error) {
+		console.log(`Error: ${error.message}`);
+	}
+}
