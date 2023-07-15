@@ -97,6 +97,8 @@ const isTargetReached = (targetHours: number, average: number): boolean => {
 	else if (average < targetHours) {
 		return false;
 	}
+
+	return false;
 };
 
 // Target - average > 1 -> 3
@@ -127,6 +129,8 @@ const ratingDescription = (rating: number): string => {
 	else if (rating === 1) {
 		return 'Improvement needed';
 	}
+
+	return '';
 };
 
 console.log(calculateExercises([1, 0, 2, 4.5, 0, 3, 1, 0, 4], 2));

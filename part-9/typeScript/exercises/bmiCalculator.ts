@@ -1,7 +1,7 @@
 
 // Formula:
 	// (weight(kg) / (height(cm) / 100)^2) * 703
-const calculateBmi = (height: number, weight: number): string => {
+export const calculateBmi = (height: number, weight: number): string => {
 	const bmi = (weight / (Math.pow(height / 100, 2))) * 703;
 
 	if (bmi <= 18.4) {
@@ -13,6 +13,8 @@ const calculateBmi = (height: number, weight: number): string => {
 	else if (bmi >= 40) {
 		return `Obese (Unhealthy weight)`;
 	}
+
+	return '';
 }
 
 console.log(calculateBmi(180, 74));
