@@ -53,30 +53,35 @@ app.post('/exercises', (_request, response) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { daily_exercises, target } = _request.body;
 
-	let result0 = daily_exercises.every((value: any) => {
+/* 	let result0 = daily_exercises.every((value: any) => {
 		console.log(`Daily exercises: ${typeof value}`)
 		return typeof value !== 'number';
-	})
-
-	console.log(`Result-0: ${result0}`)
+	}) */
 	
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-parameter-value
-	const isNumbers = daily_exercises.every((value: any) => {
-		if (typeof value !== 'number') {
-			return true;
-		} else return false;
-	})
+	let notAllNumbers;
+	if (Array.isArray(daily_exercises)) {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		notAllNumbers = false;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		daily_exercises.forEach((value: any) => {
+			if (typeof value !== 'number') {
+				notAllNumbers = true;
+			}
+		});
+	}
 
   // Validate input
-  if (!daily_exercises || !target) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (!daily_exercises || !target || daily_exercises.length <= 0) {
     return response.json({ error: 'Parameters missing' }).status(400);
   } else if (
-    isNaN(target) || isNumbers
+    isNaN(Number(target)) || notAllNumbers
   ) {
     return response.json({ error: 'Malformatted parameters' }).status(400);
   }
 
   // Calculate result
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const result = calculateExercises(daily_exercises, Number(target));
 
   return response.send(result).status(200);
